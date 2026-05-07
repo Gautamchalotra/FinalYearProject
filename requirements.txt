@@ -1,0 +1,12 @@
+pandas
+numpy
+scikit-learn
+statsmodels
+prophet
+tensorflow
+pulp
+plotly
+flask
+python-dotenv
+fastapi
+uvicorn

@@ -1,0 +1,52 @@
+{% extends "base.html" %} {% block content %}
+<h2 class="mb-4"> Outbreak & Anomaly Radars</h2>
+
+<div class="explanation-block">
+  <h5> What is happening here?</h5>
+  <p>
+    <strong>Simple Explanation:</strong> Acts as a burglar alarm. If patient
+    levels spike extremely fast today, it fires an alarm based on history.
+  </p>
+  <p>
+    <strong>Technical Explanation:</strong> A hybrid of statistical (Z-Score)
+    deviations and Unsupervised ML (Isolation Forests) flag mathematical
+    outliers instantly.
+  </p>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-8 mx-auto">
+    <div class="card shadow">
+      <div class="card-header text-center bg-dark text-white">
+        <h4 class="mb-0">Current Alert Status</h4>
+      </div>
+      <div class="card-body text-center p-5">
+        {% if anomaly.severity == 'Critical' %}
+        <h1 class="display-1 text-danger mb-4"></h1>
+        <h3 class="text-danger fw-bold">CRITICAL SURGE DETECTED</h3>
+        <p class="lead">{{ anomaly.message }}</p>
+        <hr />
+        <p class="text-muted">
+          <strong>Trigger Detail:</strong> Z-Score mathematically exceeded {{
+          "%.2f"|format(anomaly.z_score_val) }} standard deviations from the
+          median window.
+        </p>
+        {% elif anomaly.severity == 'Warning' %}
+        <h1 class="display-1 text-warning mb-4"></h1>
+        <h3 class="text-warning fw-bold">ELEVATED VOLUME WARNING</h3>
+        <p class="lead">{{ anomaly.message }}</p>
+        {% else %}
+        <h1 class="display-1 text-success mb-4"></h1>
+        <h3 class="text-success fw-bold">SYSTEM STATUS SECURE</h3>
+        <p class="lead">{{ anomaly.message }}</p>
+        <hr />
+        <p class="text-muted">
+          Neither Z-Score barriers nor Isolation Forest boundaries were
+          triggered by today's payload.
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

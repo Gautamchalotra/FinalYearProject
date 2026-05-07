@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediOptima | AI Hospital Logistics</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      href="{{ url_for('static', filename='css/style.css') }}"
+      rel="stylesheet"
+    />
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}"> MediOptima</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/' %}active{% endif %}"
+                href="{{ url_for('home') }}"
+                > Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/forecast' %}active{% endif %}"
+                href="{{ url_for('forecast') }}"
+                > Forecasting</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/optimize' %}active{% endif %}"
+                href="{{ url_for('optimize') }}"
+                > Optimization</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/anomaly' %}active{% endif %}"
+                href="{{ url_for('anomaly') }}"
+                > Anomaly</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/insights' %}active{% endif %}"
+                href="{{ url_for('insights') }}"
+                > Insights</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/medicine' %}active{% endif %}"
+                href="{{ url_for('medicine') }}"
+                > Medicine</a
+              >
+            </li>
+          </ul>
+          <form
+            action="{{ url_for('set_hospital') }}"
+            method="POST"
+            class="d-flex align-items-center ms-3"
+          >
+            <select
+              name="hospital_id"
+              class="form-select form-select-sm fw-bold"
+              onchange="this.form.submit()"
+              style="
+                background-color: #f8f9fa;
+                border-color: #ced4da;
+                cursor: pointer;
+              "
+            >
+              {% for hosp in available_hospitals %}
+              <option
+                value="{{ hosp }}"
+                {% if hosp == current_hospital %}selected{% endif %}
+              >
+                 {{ hosp }}
+              </option>
+              {% endfor %}
+            </select>
+          </form>
+          <button
+            id="theme-toggle"
+            class="btn btn-outline-secondary btn-sm ms-3"
+          >
+             Dark Mode
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">{% block content %}{% endblock %}</div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

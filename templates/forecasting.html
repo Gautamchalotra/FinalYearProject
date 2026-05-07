@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4"> Demand Forecasting & Analytics</h2>
+
+<div class="explanation-block">
+    <h5> What is happening here?</h5>
+    <p><strong>Simple Explanation:</strong> We predict how many patients will arrive soon using algorithms.</p>
+    <p><strong>Technical Explanation:</strong> Time-series arrays are pushed through stats models and neural nets. They are dynamically benchmarked and plotted based on lowest MAPE scores.</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card p-3 shadow-sm">
+            <form method="POST" action="{{ url_for('forecast') }}" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="forecast_days" class="col-form-label fw-bold">Forecast Horizon (Days):</label>
+                </div>
+                <div class="col-auto">
+                    <input type="number" class="form-control" id="forecast_days" name="forecast_days" value="{{ forecast_days }}" min="1" max="60">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Update Forecast</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Performance Metric Ledger</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">MAPE = Mean Absolute Percentage Error (lower is better). RMSE = Root Mean Squared Error. MAE = absolute average mistakes.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Model</th>
+                                <th>MAPE (%)</th>
+                                <th>RMSE</th>
+                                <th>MAE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in models %}
+                            <tr class="{% if 'Selected' in m.Model %}table-success{% endif %}">
+                                <td>{{ m.Model }}</td>
+                                <td>{{ m.MAPE }}</td>
+                                <td>{{ m.RMSE }}</td>
+                                <td>{{ m.MAE }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">AI Trajectory Map ({{ best_model_name }})</h5>
+            </div>
+            <div class="card-body">
+                <div id="plotly-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Properly parse Jinja JSON string to avoid JS syntax errors
+        var graphJsonString = {{ graphJSON | tojson | safe }};
+        var graphJson = JSON.parse(graphJsonString);
+        
+        // Handle dark mode for plotly chart dynamically
+        if(document.body.classList.contains('dark-mode')) {
+            graphJson.layout.font = { color: '#f1f5f9' };
+            graphJson.layout.xaxis = { gridcolor: '#334155' };
+            graphJson.layout.yaxis = { gridcolor: '#334155' };
+        }
+        
+        Plotly.newPlot('plotly-chart', graphJson.data, graphJson.layout, { responsive: true });
+        
+        // Setup mutation observer to listen for dark mode changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === "class") {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    const update = {
+                        'font.color': isDark ? '#f1f5f9' : '#1e293b',
+                        'xaxis.gridcolor': isDark ? '#334155' : 'rgba(128,128,128,0.2)',
+                        'yaxis.gridcolor': isDark ? '#334155' : 'rgba(128,128,128,0.2)'
+                    };
+                    Plotly.relayout('plotly-chart', update);
+                }
+            });
+        });
+        observer.observe(document.body, { attributes: true });
+    });
+</script>
+{% endblock %}

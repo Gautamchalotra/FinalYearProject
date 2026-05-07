@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold"> Medicine Demand Prediction</h2>
+        <p class="text-muted">Predictive estimation of essential medical supplies required for the forecasted patient volume.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="explanation-block">
+            <strong>How it works:</strong> We estimate medicine needs based on predicted patient inflow. The system uses historical consumption rates combined with AI-driven forecasts to accurately anticipate the required inventory for antibiotics, painkillers, and critical ICU drugs. 
+            {% if growth_pct > 0 %}
+            <span class="text-danger fw-bold">Expect a {{ "%.1f"|format(growth_pct) }}% increase in overall medicine consumption compared to the last cycle.</span>
+            {% elif growth_pct < 0 %}
+            <span class="text-success fw-bold">Expect a {{ "%.1f"|format(growth_pct|abs) }}% decrease in overall medicine consumption compared to the last cycle.</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card h-100">
+            <div class="metric-title">Predicted Patients</div>
+            <p class="metric-value text-primary">{{ predicted_patients }}</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card h-100">
+            <div class="metric-title">Antibiotics</div>
+            <p class="metric-value" style="color: #0d6efd;">{{ medicine.antibiotics }} <span style="font-size: 1rem;">units</span></p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card h-100">
+            <div class="metric-title">Painkillers</div>
+            <p class="metric-value" style="color: #198754;">{{ medicine.painkillers }} <span style="font-size: 1rem;">units</span></p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card h-100">
+            <div class="metric-title">ICU Drugs</div>
+            <p class="metric-value" style="color: #dc3545;">{{ medicine.icu_drugs }} <span style="font-size: 1rem;">units</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="fw-bold mb-3 text-center">Medicine Demand Breakdown</h5>
+            <div id="medicineChart"></div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="fw-bold mb-3 text-center">Medicine Demand Distribution (%)</h5>
+            <div id="medicinePieChart"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Properly parse Jinja JSON string to avoid JS syntax errors
+        var graphJsonString = {{ graphJSON | tojson | safe }};
+        var graphData = JSON.parse(graphJsonString);
+        
+        var pieJsonString = {{ graphJSON_pie | tojson | safe }};
+        var pieData = JSON.parse(pieJsonString);
+        
+        // Handle dark mode for plotly chart dynamically
+        if(document.body.classList.contains('dark-mode')) {
+            graphData.layout.font = { color: '#f1f5f9' };
+            graphData.layout.xaxis = { gridcolor: '#334155' };
+            graphData.layout.yaxis = { gridcolor: '#334155' };
+            
+            pieData.layout.font = { color: '#f1f5f9' };
+        }
+        
+        Plotly.newPlot('medicineChart', graphData.data, graphData.layout);
+        Plotly.newPlot('medicinePieChart', pieData.data, pieData.layout);
+        
+        // Setup mutation observer to listen for dark mode changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === "class") {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    const update = {
+                        'font.color': isDark ? '#f1f5f9' : '#1e293b',
+                        'xaxis.gridcolor': isDark ? '#334155' : 'rgba(128,128,128,0.2)',
+                        'yaxis.gridcolor': isDark ? '#334155' : 'rgba(128,128,128,0.2)'
+                    };
+                    Plotly.relayout('medicineChart', update);
+                    Plotly.relayout('medicinePieChart', { 'font.color': update['font.color'] });
+                }
+            });
+        });
+        observer.observe(document.body, { attributes: true });
+    });
+</script>
+{% endblock %}

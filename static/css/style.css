@@ -1,0 +1,193 @@
+/* Bootstrap 5 Overrides & Custom Theme for MediOptima */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #343a40;
+}
+
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: #2c3e50 !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.nav-link.active, .nav-link:hover {
+    color: #0d6efd !important;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.metric-title {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Button UI Polish */
+.btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+.btn-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-dark {
+    background-color: #1e293b;
+    border-color: #1e293b;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(30, 41, 59, 0.3);
+}
+.btn-dark:hover {
+    background-color: #0f172a;
+    border-color: #0f172a;
+}
+
+.log-box {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    color: #00ff00;
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 8px;
+    height: 15rem;
+    overflow-y: auto;
+}
+
+.explanation-block {
+    background-color: #e9ecef;
+    border-left: 4px solid #0d6efd;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.insight-success { border-left: 4px solid #198754; background: #d1e7dd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+.insight-warning { border-left: 4px solid #ffc107; background: #fff3cd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+.insight-danger { border-left: 4px solid #dc3545; background: #f8d7da; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+body.dark-mode .navbar {
+    background-color: #1e293b !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    border-bottom: 1px solid #334155;
+}
+
+body.dark-mode .navbar-brand {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .nav-link {
+    color: #cbd5f5 !important;
+}
+
+body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover {
+    color: #60a5fa !important;
+}
+
+body.dark-mode .card {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    border: 1px solid #334155;
+}
+
+/* Ensure background colors on cards with bg-light/bg-white classes are overridden in dark mode */
+body.dark-mode .bg-light,
+body.dark-mode .bg-white {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .text-muted, body.dark-mode .text-secondary {
+    color: #cbd5f5 !important;
+}
+
+body.dark-mode .metric-title {
+    color: #cbd5f5;
+    font-weight: 600;
+}
+
+body.dark-mode .metric-value {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+body.dark-mode .explanation-block {
+    background-color: #1e293b;
+    border-left-color: #3b82f6;
+    color: #f1f5f9;
+}
+
+/* Fix Tables for dark mode */
+body.dark-mode .table {
+    color: #f1f5f9;
+}
+body.dark-mode .table-light, body.dark-mode .table thead th {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #475569;
+}
+body.dark-mode .table-hover tbody tr:hover {
+    background-color: #334155;
+    color: #f1f5f9;
+}
+
+/* Fix Insight/Alert Blocks */
+body.dark-mode .insight-success { background-color: #064e3b; border-left-color: #10b981; color: #d1fae5; }
+body.dark-mode .insight-warning { background-color: #78350f; border-left-color: #f59e0b; color: #fef3c7; }
+body.dark-mode .insight-danger { background-color: #7f1d1d; border-left-color: #ef4444; color: #fee2e2; }
+
+/* Adjust button inside navbar for dark mode */
+body.dark-mode #theme-toggle {
+    color: #f1f5f9;
+    border-color: #475569;
+}
+body.dark-mode #theme-toggle:hover {
+    background-color: #334155;
+}

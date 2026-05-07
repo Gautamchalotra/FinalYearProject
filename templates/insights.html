@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4"> Natural Text Summaries</h2>
+
+<div class="explanation-block">
+    <h5> What is happening here?</h5>
+    <p><strong>Simple Explanation:</strong> Turns complicated machine learning scores into simple red, yellow, and green English sentences.</p>
+    <p><strong>Technical Explanation:</strong> A rule-based Natural Language Processing framework parses parameter breach margins logically.</p>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">Actionable Executive View</h4>
+    </div>
+    <div class="card-body">
+        {% for insight in insights %}
+            {% set text_lower = insight | lower %}
+            {% if 'critical' in text_lower or 'alert' in text_lower or 'high risk' in text_lower or 'exceed' in text_lower %}
+                <div class="insight-danger bg-danger text-white shadow-sm">
+                    <strong>{{ insight }}</strong>
+                </div>
+            {% elif 'warning' in text_lower or 'caution' in text_lower or 'moderate' in text_lower %}
+                <div class="insight-warning bg-warning text-dark shadow-sm">
+                    <strong>{{ insight }}</strong>
+                </div>
+            {% else %}
+                <div class="insight-success bg-success text-white shadow-sm">
+                    <strong>{{ insight }}</strong>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

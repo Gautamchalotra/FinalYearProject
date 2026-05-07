@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Operations Strategy & Scenarios</h2>
+
+<div class="explanation-block">
+    <h5>What is happening here?</h5>
+    <p><strong>Simple Explanation:</strong> We run complex puzzle-solving math (Linear Programming) to figure out the cheapest legal way to staff doctors given tomorrow's expected patients. We also allow you to 'stress-test' the hospital via scenario simulations!</p>
+    <p><strong>Technical Explanation:</strong> The system isolates an Objective Function (Minimize Cost) subject to operational boundary matrices (e.g. Doc/Pat ratios).</p>
+</div>
+
+<div class="card p-4 mb-4 shadow-sm">
+    <h4 class="mb-3">Stress-Test Simulation</h4>
+    <form method="POST" action="{{ url_for('optimize') }}" class="row g-3">
+        <div class="col-md-6">
+            <label for="sim_multiplier" class="form-label fw-bold">Simulate Arbitrary Patient Increase (%)</label>
+            <input type="range" class="form-range" min="0" max="100" step="5" id="sim_multiplier" name="sim_multiplier" value="{{ sim_multiplier }}">
+            <div class="text-muted text-center" id="sim_val_display">{{ sim_multiplier }}% Jump</div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            <div class="form-check form-switch mt-3">
+                <input class="form-check-input" type="checkbox" id="is_surge" name="is_surge" {% if is_surge %}checked{% endif %}>
+                <label class="form-check-label text-danger fw-bold" for="is_surge">
+                    Trigger Mass Casualty/Emergency Protocol
+                </label>
+            </div>
+        </div>
+        <div class="col-12 mt-3 text-end">
+            <button type="submit" class="btn btn-dark">Run Simulation Scenario</button>
+        </div>
+    </form>
+</div>
+
+<h4 class="mb-3">Master Allocations (Simulated Volume: {{ next_patients_sim }} Patients)</h4>
+
+{% if emergency_deficits.is_emergency %}
+    <div class="card border-danger mb-4 shadow-sm">
+        <div class="card-header bg-danger text-white fw-bold">
+            Emergency Response Planner
+        </div>
+        <div class="card-body bg-light text-dark" style="border-radius: 0 0 10px 10px;">
+            <h5 class="card-title text-danger fw-bold">Critical Resource Shortage Detected!</h5>
+            <p class="card-text">To handle the simulated patient volume, you must implement the following deficit coverage:</p>
+            <ul class="list-group list-group-flush mb-3" style="border-radius: 5px;">
+                {% if emergency_deficits.extra_beds > 0 %}
+                <li class="list-group-item bg-transparent text-danger fw-bold border-danger">Add {{ emergency_deficits.extra_beds }} extra beds to prevent capacity overflow.</li>
+                {% endif %}
+                {% if emergency_deficits.extra_doctors > 0 %}
+                <li class="list-group-item bg-transparent text-danger fw-bold border-danger">Call in {{ emergency_deficits.extra_doctors }} extra doctors immediately.</li>
+                {% endif %}
+                {% if emergency_deficits.extra_nurses > 0 %}
+                <li class="list-group-item bg-transparent text-danger fw-bold border-danger">Call in {{ emergency_deficits.extra_nurses }} extra nurses immediately.</li>
+                {% endif %}
+            </ul>
+            <div class="alert alert-warning mb-0 shadow-sm border-warning">
+                <strong>Action Required:</strong> Trigger Code Yellow and contact external staffing agencies.
+            </div>
+        </div>
+    </div>
+{% elif bed_opt.required_beds > latest.available_beds * 0.85 %}
+    <div class="alert alert-warning fw-bold shadow-sm border-warning">
+        BED CAPACITY WARNING: Nearing max allowable capacity. ({{ bed_opt.required_beds }} / {{ latest.available_beds }})
+    </div>
+{% endif %}
+
+<div class="row mb-5 text-center">
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="text-secondary">Total Required Beds</h5>
+            <h2 class="fw-bold">{{ bed_opt.required_beds }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="text-secondary">Doctors Scheduled</h5>
+            <h2 class="fw-bold">{{ sim_opt.optimal_doctors }}</h2>
+            <small class="text-muted">{% if sim_opt.optimal_doctors - base_opt.optimal_doctors > 0 %}+{% endif %}{{ sim_opt.optimal_doctors - base_opt.optimal_doctors }} vs Normal AI</small>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="text-secondary">Nurses Scheduled</h5>
+            <h2 class="fw-bold">{{ sim_opt.optimal_nurses }}</h2>
+            <small class="text-muted">{% if sim_opt.optimal_nurses - base_opt.optimal_nurses > 0 %}+{% endif %}{{ sim_opt.optimal_nurses - base_opt.optimal_nurses }} vs Normal AI</small>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Simulated Medicine Demand</h4>
+<div class="row mb-5 text-center">
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light border-primary border-2">
+            <h5 class="text-secondary">Antibiotics</h5>
+            <h2 class="fw-bold text-primary">{{ sim_medicine_needs.antibiotics }} <span style="font-size:1rem;color:#6c757d">units</span></h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light border-success border-2">
+            <h5 class="text-secondary">Painkillers</h5>
+            <h2 class="fw-bold text-success">{{ sim_medicine_needs.painkillers }} <span style="font-size:1rem;color:#6c757d">units</span></h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light border-danger border-2">
+            <h5 class="text-secondary">ICU Drugs</h5>
+            <h2 class="fw-bold text-danger">{{ sim_medicine_needs.icu_drugs }} <span style="font-size:1rem;color:#6c757d">units</span></h2>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Operational Cost Analysis</h4>
+<div class="row mb-5 text-center">
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="text-secondary">Staff Cost</h5>
+            <h3 class="fw-bold">₹{{ "{:,.2f}".format(staff_cost) }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="text-secondary">Medicine Cost</h5>
+            <h3 class="fw-bold">₹{{ "{:,.2f}".format(medicine_cost) }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm bg-dark text-white">
+            <h5 class="text-light">Total Estimated Cost</h5>
+            <h2 class="fw-bold text-warning">₹{{ "{:,.2f}".format(total_operational_cost) }}</h2>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Extended Constraint Graphs</h4>
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div id="plotly-icu"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div id="plotly-beds"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Range slider value update
+        const slider = document.getElementById('sim_multiplier');
+        const output = document.getElementById('sim_val_display');
+        if (slider && output) {
+            slider.oninput = function() {
+                output.innerHTML = this.value + "% Jump";
+            };
+        }
+
+        // Properly parse Jinja JSON string to avoid JS syntax errors
+        var icuJsonString = {{ graphJSON_icu | tojson | safe }};
+        var bedsJsonString = {{ graphJSON_beds | tojson | safe }};
+        
+        var icuJson = JSON.parse(icuJsonString);
+        var bedsJson = JSON.parse(bedsJsonString);
+
+        Plotly.newPlot('plotly-icu', icuJson.data, icuJson.layout, { responsive: true });
+        Plotly.newPlot('plotly-beds', bedsJson.data, bedsJson.layout, { responsive: true });
+    });
+</script>
+{% endblock %}

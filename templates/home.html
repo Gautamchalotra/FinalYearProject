@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h1 class="display-5 fw-bold text-primary"> MediOptima Resource Optimization</h1>
+        <p class="lead text-muted">Automated Patient Forecasting | Capacity Optimization | Operational Analytics</p>
+    </div>
+</div>
+
+<div class="explanation-block">
+    <h5> What is happening here?</h5>
+    <p><strong>Simple Explanation:</strong> Welcome! This system helps hospitals predict the future so they are never short on beds or doctors!</p>
+    <p><strong>Technical Explanation:</strong> This dashboard is an operational frontend integrating time-series ML (ARIMA/Prophet/LSTM) alongside Linear Programming constraints to prescribe specific administrative actions.</p>
+</div>
+
+<h3 class="mb-4"> Current Hospital Status (Last 24h)</h3>
+<div class="row mb-5">
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card">
+            <div class="metric-title" title="Total volume of patients currently logged">Current Patients </div>
+            <div class="metric-value">{{ latest.patients }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card">
+            <div class="metric-title" title="Critical Intensive Care Unit occupancy">ICU Demand </div>
+            <div class="metric-value">{{ latest.icu_patients }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card">
+            <div class="metric-title" title="Walk-ins at the Emergency Department">ED Arrivals </div>
+            <div class="metric-value">{{ latest.emergency_cases }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card metric-card">
+            <div class="metric-title" title="Physical limit of beds available">Beds Available </div>
+            <div class="metric-value">{{ latest.available_beds }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"> System Logs Pipeline</h5>
+            </div>
+            <div class="card-body">
+                <div class="log-box">
+                    {% for log in logs %}
+                        <div>{{ log }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
